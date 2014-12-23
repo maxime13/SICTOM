@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -23,6 +24,8 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.*;
+import org.jfree.text.TextBox;
+import org.jfree.ui.action.ActionButton;
 
 /**
  *
@@ -43,15 +46,26 @@ public class SITCOM implements ActionListener {
     JFrame fenetre;
     camion histogramme;
     Employee emp;
-
+    GridBagConstraints c;
+    TextField week1;
+    TextField week2;
+    JComboBox macombo ;
+    JComboBox macombo2 ;
+           
     public SITCOM() throws SQLException {
         fenetre = new JFrame();
+        macombo = new JComboBox();
+        macombo2 = new JComboBox();
         bd = new BDD();
         pan = new JPanel();
-        //construireFenetre();
+        c = new GridBagConstraints();
+        week1=new TextField();
+        week2=new TextField();
+        construireFenetre();
+
         //bd.donneemployee();
         l2.add("cat");
-        fenetreemployee();
+        //fenetreemployee();
     }
 
     private void construireFenetre() throws SQLException {
@@ -75,13 +89,21 @@ public class SITCOM implements ActionListener {
     }
 
     public void testFenetre() {
-        JComboBox macombo = new JComboBox();
-        JComboBox macombo2 = new JComboBox();
 
-        macombo.addActionListener(this);
+        JLabel semaine1=new JLabel("Date de début :");
+ 
+        JLabel semaine2=new JLabel("Date de fin :");
+        JLabel poids=new JLabel("Poids :");
+        JLabel cam=new JLabel("Camion :");
+        JButton valide=new JButton("Valider");
+
+        GridBagLayout grid= new GridBagLayout();
+        pan.setLayout(grid);
+
+       /* macombo.addActionListener(this);
         macombo.setActionCommand(COMMANDE_POIDS);
         macombo2.addActionListener(this);
-        macombo2.setActionCommand(COMMANDE_NUMERO);
+        macombo2.setActionCommand(COMMANDE_NUMERO);*/
 
         macombo.addItem(null);
         macombo.addItem("10kg");
@@ -94,31 +116,57 @@ public class SITCOM implements ActionListener {
         macombo2.addItem("3");
         macombo2.addItem("4");
         macombo2.addItem("5");
-
+        c.gridwidth=1;
         fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         fenetre.setBounds(10, 10, 500, 500);
-
-        pan.add(macombo);
-        pan.add(macombo2);
-
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        pan.add(semaine1,c);
+        c.gridx = 1;
+        c.gridy = 0;
+        pan.add(week1,c);
+        c.gridx = 0;
+        c.gridy = 1;
+        pan.add(semaine2,c);
+        c.gridx = 1;
+        c.gridy = 1;
+        pan.add(week2,c);
+        c.gridx = 0;
+        c.gridy = 2;
+        pan.add(poids,c);
+        c.gridx = 1;
+        c.gridy = 2;
+        pan.add(macombo,c);
+        c.gridx = 0;
+        c.gridy = 3;
+        pan.add(cam,c);
+        
+        c.gridx = 1;
+        c.gridy = 3;
+        pan.add(macombo2,c);
+        valide.addActionListener(this);
         histogramme = new camion("Histogramme", "Poids", "Nombres d'occurences", valeurs, Color.red, l2, l1, true);
-        pan.add(histogramme);
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth=2;
+        pan.add(histogramme,c);        
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridwidth=1;
+        pan.add(valide,c);
+
         fenetre.add(pan);
 
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Object obj = e.getSource();
 
-        if (obj instanceof JComboBox) {
             int num;
-            JComboBox macombo = (JComboBox) obj;
-            String itemselected = (String) macombo.getSelectedItem();
-            String commande = e.getActionCommand();
 
-            switch (commande) {
-                case COMMANDE_POIDS:
+            String itemselected = (String) macombo.getSelectedItem();
+
                     int i = 1;
                     switch (itemselected) {
                         case "10kg":
@@ -155,45 +203,50 @@ public class SITCOM implements ActionListener {
                             break;
                         default:
                             break;
-                    }
+                    
 
                     /*try {
                      valeurs = bd.recupdonne(pas, tranche);
                      } catch (SQLException ex) {
                      Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
                      }*/
-                    break;
+                   
+                    }
 
-                case COMMANDE_NUMERO:
+                   itemselected=(String)macombo2.getSelectedItem();
                     num = Integer.parseInt(itemselected);
                     switch (num) {
                         case 0:
                             try {
-                                valeurs = bd.recupdonne(pas, tranche);
+                                valeurs = bd.recupdonne(pas, tranche,week1.getText(),week2.getText());
                             } catch (SQLException ex) {
                                 Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             break;
                         default:
                             try {
-                                valeurs = bd.rechcamion(pas, tranche, num);
+                                valeurs = bd.rechcamion(pas, tranche, num,week1.getText(),week2.getText());
                             } catch (SQLException ex) {
                                 Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             break;
                     }
+                    //camion prev = histogramme;
+                    //histogramme = new camion("Histogramme", "Poids", "Nombres d'occurences", valeurs, Color.red, l2, l1, true);
+
+                    //pan.remove(prev);
+                    //pan.add(histogramme);
+
                     camion prev = histogramme;
                     histogramme = new camion("Histogramme", "Poids", "Nombres d'occurences", valeurs, Color.red, l2, l1, true);
-
+                    c.gridx = 0;
+                    c.gridy = 4;
+                    c.gridwidth=2;
                     pan.remove(prev);
-                    pan.add(histogramme);
-
+                    pan.add(histogramme,c);
                     fenetre.repaint();
                     fenetre.pack();
-                    break;
-            }
-
-        }
+                
     }
 
     /**

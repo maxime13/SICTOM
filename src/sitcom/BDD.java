@@ -37,7 +37,7 @@ public class BDD {
 
     }
 
-    public List<Float> recupdonne(float pas, int tranche) throws SQLException {
+    public List<Float> recupdonne(float pas, int tranche,String date1,String date2) throws SQLException {
         List<Float> valeurs = new ArrayList<Float>();
         float cpt[] = new float[tranche + 1];
         float borneinf = 0;
@@ -46,7 +46,7 @@ public class BDD {
         String query = "";
         while (bornesup <= 20000000) {
 
-            query = "Select * from effectue where PoidsNet>" + borneinf + " and PoidsNet<= " + bornesup;
+            query = "Select * from effectue where PoidsNet>" + borneinf + " and PoidsNet<= " + bornesup +" and DateTournee between '" + date1 + "' and '" +date2+"'";
             results = stm.executeQuery(query);
 
             while (results.next()) {
@@ -57,7 +57,7 @@ public class BDD {
             borneinf = borneinf + pas;
             i++;
         }
-        query = "Select * from effectue where PoidsNet > 20000000";
+        query = "Select * from effectue where PoidsNet > 20000000"+ " and DateTournee between '" + date1 + "' and '" +date2+"'";
         results = stm.executeQuery(query);
 
         while (results.next()) {
@@ -78,7 +78,7 @@ public class BDD {
      * @return
      * @throws java.sql.SQLException
      */
-    public List<Float> rechcamion(float pas, int tranche, int num) throws SQLException {
+    public List<Float> rechcamion(float pas, int tranche, int num,String date1,String date2) throws SQLException {
         List<Float> valeurs = new ArrayList<Float>();
         float cpt[] = new float[tranche + 1];
         float borneinf = 0;
@@ -87,7 +87,7 @@ public class BDD {
         String query = "";
         while (bornesup <= 20000000) {
 
-            query = "Select * from effectue where PoidsNet>" + borneinf + " and PoidsNet<= " + bornesup + " and IdVehicule = " + num;
+            query = "Select * from effectue where PoidsNet>" + borneinf + " and PoidsNet<= " + bornesup + " and IdVehicule = " + num+" and DateTournee between '" + date1 + "' and '" +date2+"'";
             results = stm.executeQuery(query);
 
             while (results.next()) {
@@ -98,7 +98,7 @@ public class BDD {
             borneinf = borneinf + pas;
             i++;
         }
-        query = "Select * from effectue where PoidsNet > 20000000";
+        query = "Select * from effectue where PoidsNet > 20000000"+ " and DateTournee between '" + date1 + "' and '" +date2+"'";
         results = stm.executeQuery(query);
 
         while (results.next()) {
