@@ -46,11 +46,15 @@ public class SITCOM implements ActionListener {
     JFrame fenetre;
     camion histogramme;
     Employee emp;
+    Poids pds;
     GridBagConstraints c;
     TextField week1;
     TextField week2;
     JComboBox macombo ;
     JComboBox macombo2 ;
+    JButton valide;
+    JButton validePoids;
+    JButton valideemployee;
            
     public SITCOM() throws SQLException {
         fenetre = new JFrame();
@@ -58,6 +62,8 @@ public class SITCOM implements ActionListener {
         macombo2 = new JComboBox();
         bd = new BDD();
         pan = new JPanel();
+        GridBagLayout grid= new GridBagLayout();
+        pan.setLayout(grid);
         c = new GridBagConstraints();
         week1=new TextField();
         week2=new TextField();
@@ -69,19 +75,71 @@ public class SITCOM implements ActionListener {
     }
 
     private void construireFenetre() throws SQLException {
-
+        //fenetreemployee();
         testFenetre();
+        //fenetrepoids();
         fenetre.pack();
         fenetre.setVisible(true);
 
     }
+        private void fenetrepoids() throws SQLException {
+        JLabel jour=new JLabel("Jour de la semaine :");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth=1;
+        c.gridx = 0;
+        c.gridy = 0;
+        pan.add(jour,c);
+        c.gridx = 1;
+        c.gridy = 0;      
+        pan.add(week1,c);
 
-    private void fenetreemployee() throws SQLException {
-
-        bd.donneemployee(valeurs, l1);
-        emp = new Employee(valeurs, l1);
-        pan.add(emp);
+        pds = new Poids(valeurs, l1);
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth=2;
+        pan.add(pds,c);
+        validePoids=new JButton("Valider");
+        validePoids.addActionListener(this);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth=1;
+        pan.add(validePoids,c);
         fenetre.add(pan);
+        fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        fenetre.setBounds(10, 10, 500, 500);
+        fenetre.pack();
+        fenetre.setVisible(true);
+    }
+        
+    private void fenetreemployee() throws SQLException {
+        JLabel semaine1=new JLabel("Date de début :");
+ 
+        JLabel semaine2=new JLabel("Date de fin :");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        pan.add(semaine1,c);
+        c.gridx = 1;
+        c.gridy = 0;
+        pan.add(week1,c);
+        c.gridx = 0;
+        c.gridy = 1;
+        pan.add(semaine2,c);
+        c.gridx = 1;
+        c.gridy = 1;
+        pan.add(week2,c);
+        emp = new Employee(valeurs, l1);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth=2;
+        pan.add(emp,c);
+        fenetre.add(pan);
+        validePoids=new JButton("Valider");
+        validePoids.addActionListener(this);
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth=1;
+        pan.add(valideemployee,c);
         fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         fenetre.setBounds(10, 10, 500, 500);
         fenetre.pack();
@@ -95,10 +153,9 @@ public class SITCOM implements ActionListener {
         JLabel semaine2=new JLabel("Date de fin :");
         JLabel poids=new JLabel("Poids :");
         JLabel cam=new JLabel("Camion :");
-        JButton valide=new JButton("Valider");
+        valide=new JButton("Valider");
 
-        GridBagLayout grid= new GridBagLayout();
-        pan.setLayout(grid);
+
 
        /* macombo.addActionListener(this);
         macombo.setActionCommand(COMMANDE_POIDS);
@@ -163,8 +220,10 @@ public class SITCOM implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-            int num;
-
+        if(e.getSource() == valide)
+        {
+        int num;
+        valeurs.clear();
             String itemselected = (String) macombo.getSelectedItem();
 
                     int i = 1;
@@ -224,6 +283,7 @@ public class SITCOM implements ActionListener {
                             }
                             break;
                         default:
+                            
                             try {
                                 valeurs = bd.rechcamion(pas, tranche, num,week1.getText(),week2.getText());
                             } catch (SQLException ex) {
@@ -246,6 +306,46 @@ public class SITCOM implements ActionListener {
                     pan.add(histogramme,c);
                     fenetre.repaint();
                     fenetre.pack();
+        }
+        else if (e.getSource()==valideemployee)
+        {
+            valeurs.clear();
+            l1.clear();
+            try {
+                bd.donneemployee(valeurs, l1,week1.getText(),week2.getText());
+            } catch (SQLException ex) {
+                Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Employee prev=emp;
+            
+            emp = new Employee(valeurs, l1);
+            c.gridx = 0;
+            c.gridy = 2;
+            c.gridwidth=2;
+            pan.remove(prev);
+            pan.add(emp,c); 
+            fenetre.repaint();
+            fenetre.pack();
+        }
+        else if(e.getSource()== validePoids)
+        {
+            valeurs.clear();
+            l1.clear();
+            try {
+                bd.poidsparjour(valeurs, l1,week1.getText());
+            } catch (SQLException ex) {
+                Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Poids prev=pds;
+            pds = new Poids(valeurs, l1);
+            c.gridx = 0;
+            c.gridy = 1;
+            c.gridwidth=2;
+            pan.remove(prev);
+            pan.add(pds,c); 
+            fenetre.repaint();
+            fenetre.pack();
+        }
                 
     }
 

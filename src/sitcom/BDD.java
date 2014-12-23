@@ -112,16 +112,26 @@ public class BDD {
         return valeurs;
     }
 
-    public void donneemployee(List<Float> valeurs, List<String> nom) throws SQLException {
+    public void donneemployee(List<Float> valeurs, List<String> nom,String date1,String date2) throws SQLException {
 
         String query = "SELECT e.IdChauffeur, Nom, SUM(TIMESTAMPDIFF(HOUR, e.HeureDepart, e.HeureArrivee) )\n"
                 + "	FROM movedb.effectue e\n"
-                + "	INNER JOIN chauffeur c on c.IdChauffeur = e.IdChauffeur\n"
+                + "	INNER JOIN chauffeur c on c.IdChauffeur = e.IdChauffeur and dateTournee between '" + date1 + "' and '" +date2+"'\n"
                 + "	GROUP BY e.IdChauffeur, c.nom";
         results = stm.executeQuery(query);
         while (results.next()) {
             valeurs.add(results.getFloat(3));
             nom.add(results.getString(2));
+        }
+    }
+    
+    public void poidsparjour(List<Float> valeurs, List<String> date,String jour) throws SQLException
+    {
+        String query="select Poids,DateTournee from tournee,effectue where JourDeLaSemaine='"+jour+"' and tournee.IdTournee=effectue.IdTournee group by DateTournee";
+        results = stm.executeQuery(query);
+        while (results.next()) {
+            valeurs.add(results.getFloat(1));
+            date.add(results.getString(2));
         }
     }
 
