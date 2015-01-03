@@ -5,7 +5,7 @@
  */
 
 /* Classe pour la connection à la BDD*/
-package sitcom;
+package Bdd;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

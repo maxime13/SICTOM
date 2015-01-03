@@ -4,12 +4,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sitcom;
+package Graphic;
 
+import Bdd.BDD;
 import java.awt.Button;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.*;
+import static java.awt.GridBagConstraints.CENTER;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -31,7 +33,7 @@ import org.jfree.ui.action.ActionButton;
  *
  * @author Toshiba
  */
-public class SITCOM implements ActionListener {
+public class Fenetre extends JFrame implements ActionListener {
 
     //constantes
     private static final String COMMANDE_POIDS = "poids";
@@ -43,7 +45,7 @@ public class SITCOM implements ActionListener {
     List<String> l2 = new ArrayList<String>();
     BDD bd;
     JPanel pan;
-    JFrame fenetre;
+    //JFrame fenetre;
     camion histogramme;
     Employee emp;
     Poids pds;
@@ -55,9 +57,11 @@ public class SITCOM implements ActionListener {
     JButton valide;
     JButton validePoids;
     JButton valideemployee;
+    JMenuBar menubar;
+    JLabel image;
            
-    public SITCOM() throws SQLException {
-        fenetre = new JFrame();
+    public Fenetre() throws SQLException {
+        //fenetre = new JFrame();
         macombo = new JComboBox();
         macombo2 = new JComboBox();
         bd = new BDD();
@@ -67,19 +71,88 @@ public class SITCOM implements ActionListener {
         c = new GridBagConstraints();
         week1=new TextField();
         week2=new TextField();
+        menubar=new JMenuBar();
+        image = new JLabel( new ImageIcon( "logo.jpg"));
         construireFenetre();
-
+        
         //bd.donneemployee();
         l2.add("cat");
         //fenetreemployee();
     }
+    
+    private void ajoutmenu()
+    {
+        JMenu menu=new JMenu("Menu");
+        
+        JMenuItem camion = new JMenuItem("Gestion des camions");
+        camion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                pan.removeAll();
+                fenetrecamion();
+            }
+        });
+        menu.add(camion);
+        JMenuItem employee = new JMenuItem("Gestion des employées");
+        
+        employee.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    pan.removeAll();
+                    fenetreemployee();
+                } catch (SQLException ex) {
+                    Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        menu.add(employee);
+        JMenuItem tournee = new JMenuItem("Gestion des tournées");
+        tournee.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    pan.removeAll();
+                    fenetrepoids();
+                } catch (SQLException ex) {
+                    Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        menu.add(tournee);
+        
+        menubar.add(menu);
+        pan.add(menubar);
+        
+        setJMenuBar(menubar);
+        add(pan);
+        
+    }
+    
+    private void ajoutLogo()
+    {
+        
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth=1;
+        c.gridx = 1;
+        c.gridy = 1;
+        pan.add(image,c);
+    }
 
     private void construireFenetre() throws SQLException {
+
         //fenetreemployee();
-        testFenetre();
+        //testFenetre();
         //fenetrepoids();
-        fenetre.pack();
-        fenetre.setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setBounds(0, 0, 1000, 1000);
+        ajoutmenu();
+        ajoutLogo();
+        
+        this.pack();
+        //this.setDefaultLookAndFeelDecorated(true);
+        this.setExtendedState(this.MAXIMIZED_BOTH);
+        setVisible(true);
 
     }
         private void fenetrepoids() throws SQLException {
@@ -104,11 +177,11 @@ public class SITCOM implements ActionListener {
         c.gridy = 2;
         c.gridwidth=1;
         pan.add(validePoids,c);
-        fenetre.add(pan);
-        fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        fenetre.setBounds(10, 10, 500, 500);
-        fenetre.pack();
-        fenetre.setVisible(true);
+        add(pan);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setBounds(10, 10, 500, 500);
+        pack();
+        setVisible(true);
     }
         
     private void fenetreemployee() throws SQLException {
@@ -133,35 +206,26 @@ public class SITCOM implements ActionListener {
         c.gridy = 2;
         c.gridwidth=2;
         pan.add(emp,c);
-        fenetre.add(pan);
-        validePoids=new JButton("Valider");
-        validePoids.addActionListener(this);
+        
+        valideemployee=new JButton("Valider");
+        valideemployee.addActionListener(this);
         c.gridx = 0;
         c.gridy = 3;
         c.gridwidth=1;
         pan.add(valideemployee,c);
-        fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        fenetre.setBounds(10, 10, 500, 500);
-        fenetre.pack();
-        fenetre.setVisible(true);
+        add(pan);
+        pack();
+        setVisible(true);
     }
 
-    public void testFenetre() {
-
+    public void fenetrecamion() {
+     
         JLabel semaine1=new JLabel("Date de début :");
  
         JLabel semaine2=new JLabel("Date de fin :");
         JLabel poids=new JLabel("Poids :");
         JLabel cam=new JLabel("Camion :");
         valide=new JButton("Valider");
-
-
-
-       /* macombo.addActionListener(this);
-        macombo.setActionCommand(COMMANDE_POIDS);
-        macombo2.addActionListener(this);
-        macombo2.setActionCommand(COMMANDE_NUMERO);*/
-
         macombo.addItem(null);
         macombo.addItem("10kg");
         macombo.addItem("100kg");
@@ -174,8 +238,7 @@ public class SITCOM implements ActionListener {
         macombo2.addItem("4");
         macombo2.addItem("5");
         c.gridwidth=1;
-        fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        fenetre.setBounds(10, 10, 500, 500);
+       
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 0;
@@ -207,13 +270,17 @@ public class SITCOM implements ActionListener {
         c.gridx = 0;
         c.gridy = 4;
         c.gridwidth=2;
+        
         pan.add(histogramme,c);        
         c.gridx = 0;
         c.gridy = 5;
         c.gridwidth=1;
         pan.add(valide,c);
-
-        fenetre.add(pan);
+        
+        add(pan);
+        
+        pack();
+        setVisible(true);
 
     }
 
@@ -223,6 +290,8 @@ public class SITCOM implements ActionListener {
         if(e.getSource() == valide)
         {
         int num;
+        
+        
         valeurs.clear();
             String itemselected = (String) macombo.getSelectedItem();
 
@@ -267,7 +336,7 @@ public class SITCOM implements ActionListener {
                     /*try {
                      valeurs = bd.recupdonne(pas, tranche);
                      } catch (SQLException ex) {
-                     Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
+                     Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
                      }*/
                    
                     }
@@ -279,7 +348,7 @@ public class SITCOM implements ActionListener {
                             try {
                                 valeurs = bd.recupdonne(pas, tranche,week1.getText(),week2.getText());
                             } catch (SQLException ex) {
-                                Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             break;
                         default:
@@ -287,7 +356,7 @@ public class SITCOM implements ActionListener {
                             try {
                                 valeurs = bd.rechcamion(pas, tranche, num,week1.getText(),week2.getText());
                             } catch (SQLException ex) {
-                                Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             break;
                     }
@@ -304,8 +373,8 @@ public class SITCOM implements ActionListener {
                     c.gridwidth=2;
                     pan.remove(prev);
                     pan.add(histogramme,c);
-                    fenetre.repaint();
-                    fenetre.pack();
+                    repaint();
+                    pack();
         }
         else if (e.getSource()==valideemployee)
         {
@@ -314,7 +383,7 @@ public class SITCOM implements ActionListener {
             try {
                 bd.donneemployee(valeurs, l1,week1.getText(),week2.getText());
             } catch (SQLException ex) {
-                Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
             }
             Employee prev=emp;
             
@@ -324,8 +393,8 @@ public class SITCOM implements ActionListener {
             c.gridwidth=2;
             pan.remove(prev);
             pan.add(emp,c); 
-            fenetre.repaint();
-            fenetre.pack();
+            repaint();
+            pack();
         }
         else if(e.getSource()== validePoids)
         {
@@ -334,7 +403,7 @@ public class SITCOM implements ActionListener {
             try {
                 bd.poidsparjour(valeurs, l1,week1.getText());
             } catch (SQLException ex) {
-                Logger.getLogger(SITCOM.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
             }
             Poids prev=pds;
             pds = new Poids(valeurs, l1);
@@ -343,8 +412,8 @@ public class SITCOM implements ActionListener {
             c.gridwidth=2;
             pan.remove(prev);
             pan.add(pds,c); 
-            fenetre.repaint();
-            fenetre.pack();
+            repaint();
+            pack();
         }
                 
     }
@@ -354,6 +423,6 @@ public class SITCOM implements ActionListener {
      */
     public static void main(String[] args) throws SQLException {
         // TODO code application logic here
-        SITCOM sit = new SITCOM();
+        Fenetre sit = new Fenetre();
     }
 }
