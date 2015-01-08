@@ -49,6 +49,7 @@ public class Fenetre extends JFrame implements ActionListener {
     camion histogramme;
     Employee emp;
     Poids pds;
+    camembert cam;
     GridBagConstraints c;
     TextField week1;
     TextField week2;
@@ -57,6 +58,7 @@ public class Fenetre extends JFrame implements ActionListener {
     JButton valide;
     JButton validePoids;
     JButton valideemployee;
+    JButton validecam;
     JMenuBar menubar;
     JLabel image;
            
@@ -121,6 +123,21 @@ public class Fenetre extends JFrame implements ActionListener {
         });
         menu.add(tournee);
         
+        JMenuItem repart = new JMenuItem("Utilisation des camions");
+        repart.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               try{
+                   pan.removeAll();
+                   fenetrecam();
+               }
+               catch(SQLException ex){
+                    Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
+               }
+            }
+        });
+        menu.add(repart);
         menubar.add(menu);
         pan.add(menubar);
         
@@ -185,10 +202,12 @@ public class Fenetre extends JFrame implements ActionListener {
     }
         
     private void fenetreemployee() throws SQLException {
+        valeurs.clear();
         JLabel semaine1=new JLabel("Date de début :");
  
         JLabel semaine2=new JLabel("Date de fin :");
         c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth=1;
         c.gridx = 0;
         c.gridy = 0;
         pan.add(semaine1,c);
@@ -213,6 +232,41 @@ public class Fenetre extends JFrame implements ActionListener {
         c.gridy = 3;
         c.gridwidth=1;
         pan.add(valideemployee,c);
+        add(pan);
+        pack();
+        setVisible(true);
+    }
+    
+    public void fenetrecam() throws SQLException{
+        valeurs.clear();
+        
+        JLabel semaine1=new JLabel("Date de début :");
+ 
+        JLabel semaine2=new JLabel("Date de fin :");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        pan.add(semaine1,c);
+        c.gridx = 1;
+        c.gridy = 0;
+        pan.add(week1,c);
+        c.gridx = 0;
+        c.gridy = 1;
+        pan.add(semaine2,c);
+        c.gridx = 1;
+        c.gridy = 1;
+        pan.add(week2,c);
+        cam=new camembert(valeurs);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth=2;
+        pan.add(cam,c);
+        validecam=new JButton("Valider");
+        validecam.addActionListener(this);
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth=1;
+        pan.add(validecam,c);
         add(pan);
         pack();
         setVisible(true);
@@ -414,6 +468,27 @@ public class Fenetre extends JFrame implements ActionListener {
             pan.add(pds,c); 
             repaint();
             pack();
+        }
+        
+        else if (e.getSource()==validecam)
+        {
+            valeurs.clear();
+            try {
+                bd.repart(valeurs,week1.getText() ,week2.getText());
+            } catch (SQLException ex) {
+                Logger.getLogger(Fenetre.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            camembert prev=cam;
+            cam=new camembert(valeurs);
+            c.gridx = 0;
+            c.gridy = 2;
+            c.gridwidth=2;
+            pan.remove(prev);
+            pan.add(cam,c); 
+            repaint();
+            pack();
+            
         }
                 
     }

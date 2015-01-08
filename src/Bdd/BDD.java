@@ -134,5 +134,14 @@ public class BDD {
             date.add(results.getString(2));
         }
     }
+    
+    public void repart(List<Float> valeurs,String date1,String date2) throws SQLException
+    {
+        String query="select count(*) from effectue where DateTournee between '" + date1 + "' and '" +date2+"'" +"group by IdVehicule";
+        results = stm.executeQuery(query);
+        while (results.next()) {
+            valeurs.add(results.getFloat(1));           
+        }
+    }
 
 }
